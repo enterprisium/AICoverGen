@@ -352,4 +352,110 @@ if __name__ == '__main__':
                                      reverb_rm_size=args.reverb_size, reverb_wet=args.reverb_wetness,
                                      reverb_dry=args.reverb_dryness, reverb_damping=args.reverb_damping,
                                      output_format=args.output_format)
+
+    import argparse
+import gc
+import hashlib
+import json
+import os
+import shlex
+import subprocess
+from contextlib import suppress
+from urllib.parse import urlparse, parse_qs
+
+import gradio as gr
+import librosa
+import numpy as np
+import soundfile as sf
+import sox
+import yt_dlp
+from pedalboard import Pedalboard, Reverb, Compressor, HighpassFilter
+from pedalboard.io import AudioFile
+from pydub import AudioSegment
+
+from mdx import run_mdx
+from rvc import Config, load_hubert, get_vc, rvc_infer
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+mdxnet_models_dir = os.path.join(BASE_DIR, 'mdxnet_models')
+rvc_models_dir = os.path.join(BASE_DIR, 'rvc_models')
+output_dir = os.path.join(BASE_DIR, 'song_output')
+
+def get_youtube_video_id(url, ignore_playlist=True):
+    # Function body remains unchanged
+
+def yt_download(link):
+    # Function body remains unchanged
+
+def raise_exception(error_msg, is_webui):
+    # Function body remains unchanged
+
+def get_rvc_model(voice_model, is_webui):
+    # Function body remains unchanged
+
+def get_audio_paths(song_dir):
+    # Function body remains unchanged
+
+def convert_to_stereo(audio_path):
+    # Function body remains unchanged
+
+def pitch_shift(audio_path, pitch_change):
+    # Function body remains unchanged
+
+def get_hash(filepath):
+    # Function body remains unchanged
+
+def display_progress(message, percent, is_webui, progress=None):
+    # Function body remains unchanged
+
+def preprocess_song(song_input, mdx_model_params, song_id, is_webui, input_type, progress=None):
+    # Function body remains unchanged
+
+def voice_change(voice_model, vocals_path, output_path, pitch_change, f0_method, index_rate, filter_radius, rms_mix_rate, protect, crepe_hop_length, is_webui):
+    # Function body remains unchanged
+
+def add_audio_effects(audio_path, reverb_rm_size, reverb_wet, reverb_dry, reverb_damping):
+    # Function body remains unchanged
+
+def combine_audio(audio_paths, output_path, main_gain, backup_gain, inst_gain, output_format):
+    # Function body remains unchanged
+
+def process_audio_file(song_input, voice_model, pitch_change, keep_files, **kwargs):
+    # This function encapsulates the existing song_cover_pipeline logic.
+    # You can copy the body of the song_cover_pipeline function here.
+    # Make sure to replace the song_cover_pipeline function call with process_audio_file where necessary.
+
+def process_folder(folder_path, voice_model, pitch_change, keep_files, **kwargs):
+    """
+    Process each audio file in the given folder.
+    """
+    for filename in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, filename)
+        if os.path.isfile(file_path) and file_path.lower().endswith(('.wav', '.mp3')):
+            print(f"Processing {file_path}...")
+            process_audio_file(file_path, voice_model, pitch_change, keep_files, **kwargs)
+
+def song_cover_pipeline(song_input, voice_model, pitch_change, keep_files, **kwargs):
+    if os.path.isdir(song_input):
+        process_folder(song_input, voice_model, pitch_change, keep_files, **kwargs)
+    else:
+        process_audio_file(song_input, voice_model, pitch_change, keep_files, **kwargs)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Generate an AI cover song in the song_output/id directory.', add_help=True)
+    parser.add_argument('-i', '--song-input', type=str, required=True, help='Link to a YouTube video, the filepath to a local mp3/wav file, or a directory containing audio files to create an AI cover of')
+    parser.add_argument('-dir', '--rvc-dirname', type=str, required=True, help='Name of the folder in the rvc_models directory containing the RVC model file and optional index file to use')
+    parser.add_argument('-p', '--pitch-change', type=int, required=True, help='Change the pitch of AI Vocals only. Generally, use 1 for male to female and -1 for vice-versa. (Octaves)')
+    parser.add_argument('-k', '--keep-files', action=argparse.BooleanOptionalAction, help='Whether to keep all intermediate audio files generated in the song_output/id directory, e.g., Isolated Vocals/Instrumentals')
+    # Add other argument definitions here as needed
+    args = parser.parse_args()
+
+    if not os.path.exists(os.path.join(rvc_models_dir, args.rvc_dirname)):
+        raise Exception(f'The folder {os.path.join(rvc_models_dir, args.rvc_dirname)} does not exist.')
+
+    song_cover_pipeline(args.song_input, args.rvc_dirname, args.pitch_change, args.keep_files,
+                        # Pass additional arguments to song_cover_pipeline as needed
+                        )
+    print(f'[+] Processing completed.')
     print(f'[+] Cover generated at {cover_path}')
